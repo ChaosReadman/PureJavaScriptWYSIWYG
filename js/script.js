@@ -1,5 +1,5 @@
 // define vars
-const editor = document.getElementsByClassName('wp-webdeasy-comment-editor')[0];
+const editor = document.getElementsByClassName('simple-wysiwyg')[0];
 const toolbar = editor.getElementsByClassName('toolbar')[0];
 const buttons = toolbar.querySelectorAll('.editor-btn:not(.has-submenu)');
 const contentArea = editor.getElementsByClassName('content-area')[0];

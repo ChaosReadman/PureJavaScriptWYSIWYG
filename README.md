@@ -5,7 +5,7 @@ https://webdeasy.de/en/program-wysiwyg-editor/
 PureJavaScriptでのWYSIWYG
 
 # 課題
-## 担当者全員への課題
+## コラボレータ全員への課題
 + 本体はJSであり、リスナーが重要な動きをしています。その部分の理解を進めてください
 + BootstrapのCSSも重要な動きをしています。カスタマイズする際に必要となるのでBootstrapへの理解も進めてください
 + 表示はvisuell-viewで行っており、HTMLとのトグルアイコンでhtml-viewと切り替えています。この動きへの理解も進めてください

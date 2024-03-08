@@ -1,4 +1,4 @@
-// define vars
+// 変数定義（最初に実行される）
 const editor = document.getElementsByClassName('simple-wysiwyg')[0];
 const toolbar = editor.getElementsByClassName('toolbar')[0];
 const buttons = toolbar.querySelectorAll('.editor-btn:not(.has-submenu)');
@@ -7,16 +7,16 @@ const visuellView = contentArea.getElementsByClassName('visuell-view')[0];
 const htmlView = contentArea.getElementsByClassName('html-view')[0];
 const modal = document.getElementsByClassName('modal')[0];
 
-// add active tag event
+// 選択領域の変更時イベントを提議
 document.addEventListener('selectionchange', selectionChange);
 
-// add paste event
+// ペースト時のイベントを定義
 visuellView.addEventListener('paste', pasteEvent);
 
-// add paragraph tag on new line
+// キー押下時のイベントを提議
 contentArea.addEventListener('keypress', addParagraphTag);
 
-// add toolbar button actions
+// ツールバーボタンクリックして時イベントを定義
 for (let i = 0; i < buttons.length; i++) {
   let button = buttons[i];
 
@@ -37,8 +37,8 @@ for (let i = 0; i < buttons.length; i++) {
   });
 }
 
-/** 
- * This function toggles between visual and html view
+/**
+ * ヴィシュアルビューとHTMLビューのトグルを行なう
  */
 function execCodeAction(button, editor) {
 
@@ -58,7 +58,7 @@ function execCodeAction(button, editor) {
 }
 
 /**
- * This function adds a link to the current selection
+ * 現在選択エリアにリンクを設定する
  */
 function execLinkAction() {
   modal.style.display = 'block';
@@ -92,7 +92,7 @@ function execLinkAction() {
     close.removeEventListener('click', arguments.callee);
   });
 
-  // close modal on X click
+  // モーダルダイアログのX(閉じる)ボタンクリック時
   close.addEventListener('click', function (e) {
     e.preventDefault();
     let linkInput = modal.querySelectorAll('#linkValue')[0];
@@ -107,7 +107,7 @@ function execLinkAction() {
 }
 
 /**
- * This function executes all 'normal' actions
+ * この関数はノーマルイベントを処理する
  */
 function execDefaultAction(action) {
   myExecCommand(action, false);
@@ -135,7 +135,7 @@ function myExecCommand(action, b) {
 }
 
 /**
- * Saves the current selection
+ * 現在の選択範囲を保存する
  */
 function saveSelection() {
   if (window.getSelection) {
@@ -154,7 +154,7 @@ function saveSelection() {
 }
 
 /**
- *  Loads a saved selection
+ *  保存した選択範囲をロードする
  */
 function restoreSelection(savedSel) {
   if (savedSel) {
@@ -171,7 +171,7 @@ function restoreSelection(savedSel) {
 }
 
 /**
- * Sets the current selected format buttons active/inactive
+ * 現在の選択範囲をアクティブ・インアクティブに変更する
  */
 function selectionChange(e) {
 
@@ -190,14 +190,14 @@ function selectionChange(e) {
 }
 
 /**
- * Checks if the passed child has the passed parent
+ * 渡された子の親をチェックする
  */
 function childOf(child, parent) {
   return parent.contains(child);
 }
 
 /**
- * Sets the tag active that is responsible for the current element
+ * 現在の選択範囲にわたされたタグが設定可能かチェックする
  */
 function parentTagActive(elem) {
   if (!elem || !elem.classList || elem.classList.contains('visuell-view')) return false;
@@ -222,7 +222,7 @@ function parentTagActive(elem) {
 }
 
 /**
- * Handles the paste event and removes all HTML tags
+ * ペーストされたものをチェックしてHTMLを除去する
  */
 function pasteEvent(e) {
   e.preventDefault();
@@ -232,7 +232,7 @@ function pasteEvent(e) {
 }
 
 /**
- * This functions adds a paragraph tag when the enter key is pressed
+ * エンターキー押下時にパラグラフタグを追加する
  */
 function addParagraphTag(evt) {
   if (evt.keyCode == '13') {

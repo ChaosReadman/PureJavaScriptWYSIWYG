@@ -17,13 +17,13 @@ visuellView.addEventListener('paste', pasteEvent);
 contentArea.addEventListener('keypress', addParagraphTag);
 
 // add toolbar button actions
-for(let i = 0; i < buttons.length; i++) {
+for (let i = 0; i < buttons.length; i++) {
   let button = buttons[i];
-  
-  button.addEventListener('click', function(e) {
+
+  button.addEventListener('click', function (e) {
     let action = this.dataset.action;
-    
-    switch(action) {
+
+    switch (action) {
       case 'toggle-view':
         execCodeAction(this, editor);
         break;
@@ -33,7 +33,7 @@ for(let i = 0; i < buttons.length; i++) {
       default:
         execDefaultAction(action);
     }
-    
+
   });
 }
 
@@ -42,64 +42,64 @@ for(let i = 0; i < buttons.length; i++) {
  */
 function execCodeAction(button, editor) {
 
-  if(button.classList.contains('active')) { // show visuell view
+  if (button.classList.contains('active')) { // show visuell view
     visuellView.innerHTML = htmlView.value;
     htmlView.style.display = 'none';
     visuellView.style.display = 'block';
 
-    button.classList.remove('active');     
+    button.classList.remove('active');
   } else {  // show html view
     htmlView.innerText = visuellView.innerHTML;
     visuellView.style.display = 'none';
     htmlView.style.display = 'block';
 
-    button.classList.add('active'); 
+    button.classList.add('active');
   }
 }
 
 /**
  * This function adds a link to the current selection
  */
-function execLinkAction() {  
+function execLinkAction() {
   modal.style.display = 'block';
   let selection = saveSelection();
 
   let submit = modal.querySelectorAll('button.done')[0];
   let close = modal.querySelectorAll('.close')[0];
-  
+
   // done button active => add link
-  submit.addEventListener('click', function(e) {
+  submit.addEventListener('click', function (e) {
     e.preventDefault();
     let newTabCheckbox = modal.querySelectorAll('#new-tab')[0];
     let linkInput = modal.querySelectorAll('#linkValue')[0];
     let linkValue = linkInput.value;
-    let newTab = newTabCheckbox.checked;    
-    
+    let newTab = newTabCheckbox.checked;
+
     restoreSelection(selection);
-    
-    if(window.getSelection().toString()) {
+
+    if (window.getSelection().toString()) {
       let a = document.createElement('a');
       a.href = linkValue;
-      if(newTab) a.target = '_blank';
+      if (newTab) a.target = '_blank';
       window.getSelection().getRangeAt(0).surroundContents(a);
     }
 
     modal.style.display = 'none';
     linkInput.value = '';
-    
+
     // deregister modal events
     submit.removeEventListener('click', arguments.callee);
     close.removeEventListener('click', arguments.callee);
-  });  
-  
+  });
+
   // close modal on X click
-  close.addEventListener('click', function(e) {
+  close.addEventListener('click', function (e) {
     e.preventDefault();
     let linkInput = modal.querySelectorAll('#linkValue')[0];
-    
+
     modal.style.display = 'none';
     linkInput.value = '';
-    
+
     // deregister modal events
     submit.removeEventListener('click', arguments.callee);
     close.removeEventListener('click', arguments.callee);
@@ -110,61 +110,82 @@ function execLinkAction() {
  * This function executes all 'normal' actions
  */
 function execDefaultAction(action) {
-  document.execCommand(action, false);
+  myExecCommand(action, false);
+  //  document.execCommand(action, false);
+}
+
+function myExecCommand(action, b) {
+  switch (action) {
+    case "bold":
+      alert(action);
+      /// 太字用のspan要素作成
+      const span = document.createElement("span")
+      span.style.fontWeight = `bold`
+      /// 現在のテキスト選択を取得
+      const userSelection = window.getSelection()
+      /// 現在の選択範囲を取得
+      const selectedTextRange = userSelection.getRangeAt(0)
+      /// その範囲を太字span要素で囲む
+      selectedTextRange.surroundContents(span)
+      break;
+      default:
+        
+  }
+
 }
 
 /**
  * Saves the current selection
  */
 function saveSelection() {
-    if(window.getSelection) {
-        sel = window.getSelection();
-        if(sel.getRangeAt && sel.rangeCount) {
-            let ranges = [];
-            for(var i = 0, len = sel.rangeCount; i < len; ++i) {
-                ranges.push(sel.getRangeAt(i));
-            }
-            return ranges;
-        }
-    } else if (document.selection && document.selection.createRange) {
-        return document.selection.createRange();
+  if (window.getSelection) {
+    sel = window.getSelection();
+    if (sel.getRangeAt && sel.rangeCount) {
+      let ranges = [];
+      for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+        ranges.push(sel.getRangeAt(i));
+      }
+      return ranges;
     }
-    return null;
+  } else if (document.selection && document.selection.createRange) {
+    return document.selection.createRange();
+  }
+  return null;
 }
 
 /**
  *  Loads a saved selection
  */
 function restoreSelection(savedSel) {
-    if(savedSel) {
-        if(window.getSelection) {
-            sel = window.getSelection();
-            sel.removeAllRanges();
-            for(var i = 0, len = savedSel.length; i < len; ++i) {
-                sel.addRange(savedSel[i]);
-            }
-        } else if(document.selection && savedSel.select) {
-            savedSel.select();
-        }
+  if (savedSel) {
+    if (window.getSelection) {
+      sel = window.getSelection();
+      sel.removeAllRanges();
+      for (var i = 0, len = savedSel.length; i < len; ++i) {
+        sel.addRange(savedSel[i]);
+      }
+    } else if (document.selection && savedSel.select) {
+      savedSel.select();
     }
+  }
 }
 
 /**
  * Sets the current selected format buttons active/inactive
- */ 
+ */
 function selectionChange(e) {
-  
-  for(let i = 0; i < buttons.length; i++) {
+
+  for (let i = 0; i < buttons.length; i++) {
     let button = buttons[i];
-    
+
     // don't remove active class on code toggle button
-    if(button.dataset.action === 'toggle-view') continue;
-    
+    if (button.dataset.action === 'toggle-view') continue;
+
     button.classList.remove('active');
   }
-  
-  if(!childOf(window.getSelection().anchorNode.parentNode, editor)) return false;
-  
+
+  if (!childOf(window.getSelection().anchorNode.parentNode, editor)) return false;
+
   parentTagActive(window.getSelection().anchorNode.parentNode);
 }
 
@@ -179,24 +200,24 @@ function childOf(child, parent) {
  * Sets the tag active that is responsible for the current element
  */
 function parentTagActive(elem) {
-  if(!elem ||!elem.classList || elem.classList.contains('visuell-view')) return false;
-  
+  if (!elem || !elem.classList || elem.classList.contains('visuell-view')) return false;
+
   let toolbarButton;
-  
+
   // active by tag names
   let tagName = elem.tagName.toLowerCase();
   toolbarButton = document.querySelectorAll(`.toolbar .editor-btn[data-tag-name="${tagName}"]`)[0];
-  if(toolbarButton) {
+  if (toolbarButton) {
     toolbarButton.classList.add('active');
   }
-  
+
   // active by text-align
   let textAlign = elem.style.textAlign;
   toolbarButton = document.querySelectorAll(`.toolbar .editor-btn[data-style="textAlign:${textAlign}"]`)[0];
-  if(toolbarButton) {
+  if (toolbarButton) {
     toolbarButton.classList.add('active');
   }
-  
+
   return parentTagActive(elem.parentNode);
 }
 
@@ -205,7 +226,7 @@ function parentTagActive(elem) {
  */
 function pasteEvent(e) {
   e.preventDefault();
-  
+
   let text = (e.originalEvent || e).clipboardData.getData('text/plain');
   document.execCommand('insertHTML', false, text);
 }
@@ -215,9 +236,9 @@ function pasteEvent(e) {
  */
 function addParagraphTag(evt) {
   if (evt.keyCode == '13') {
-    
+
     // don't add a p tag on list item
-    if(window.getSelection().anchorNode.parentNode.tagName === 'LI') return;
+    if (window.getSelection().anchorNode.parentNode.tagName === 'LI') return;
     document.execCommand('formatBlock', false, 'p');
   }
 }

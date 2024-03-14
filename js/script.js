@@ -114,24 +114,47 @@ function execDefaultAction(action) {
   //  document.execCommand(action, false);
 }
 
-function myExecCommand(action, b) {
-  switch (action) {
-    case "bold":
-      alert(action);
-      /// 太字用のspan要素作成
-      const span = document.createElement("span")
-      span.style.fontWeight = `bold`
-      /// 現在のテキスト選択を取得
-      const userSelection = window.getSelection()
-      /// 現在の選択範囲を取得
-      const selectedTextRange = userSelection.getRangeAt(0)
-      /// その範囲を太字span要素で囲む
-      selectedTextRange.surroundContents(span)
-      break;
-      default:
-        
-  }
+//選択範囲のstyle属性をスイッチのようにオンオフする
+function switchStyleSelectedRange(property, value) {
+  /// 現在のテキスト選択を取得
+  const userSelection = window.getSelection();
+  /// 現在の選択範囲を取得
+  const selectedTextRange = userSelection.getRangeAt(0);
 
+  //styleの解除をするときfragmentだと不便だから、選択範囲のクローンを要素ノードに変換
+  let fragment = selectedTextRange.cloneContents();
+  const selectElm = document.createElement("span");
+  selectElm.appendChild(fragment);
+
+  //設定したいstyle属性の値
+  const addStyle = `${property} : ${value};`;
+
+  //styleを設定したspan要素の中に選択範囲を追加
+  const span = document.createElement("span");
+  span.setAttribute("style", addStyle);
+  span.innerHTML = selectElm.innerHTML;
+
+
+  //なぜかpタグが勝手に挿入されるから要修正
+  //とりあえず選択範囲をspanで囲ってる。
+  //でもbloggerは子要素1つ1つをタグで囲ってstyle変更してるから、bloggerを参考に作成中
+  //多分こうしないとstyleの解除が難しい
+  //ってか子要素をまとめてタグで囲むとstyleの解除が難しかった
+  //やり方が下手なだけかもしれないから、良いやり方があったらコード書いてほしい
+  selectedTextRange.deleteContents(); //選択範囲をの要素を削除
+  selectedTextRange.insertNode(span); //選択範囲にstyleが適用された要素を追加
+
+  //surroundContentsだとstyleの解除が難しいことが分かったから使わない
+  //複数行選択してstyleを変更できないデメリットもある。もしかしたら他の要因でできないだけかも。
+  //うまくやればできるかもだから、一応コメントで残しておく
+  // selectedTextRange.surroundContents(span)
+}
+
+function myExecCommand(action, b) {
+  if (action == "bold") switchStyleSelectedRange("font-weight", action);
+  if (action == "italic") switchStyleSelectedRange("font-style", action);
+  if (action == "underline") switchStyleSelectedRange("text-decoration", action);
+  if (action == "strikeThrough") switchStyleSelectedRange("text-decoration", "line-through");
 }
 
 /**

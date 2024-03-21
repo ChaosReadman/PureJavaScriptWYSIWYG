@@ -151,10 +151,22 @@ function switchStyleSelectedRange(property, value) {
 }
 
 function myExecCommand(action, b) {
-  if (action == "bold") switchStyleSelectedRange("font-weight", action);
-  if (action == "italic") switchStyleSelectedRange("font-style", action);
-  if (action == "underline") switchStyleSelectedRange("text-decoration", action);
-  if (action == "strikeThrough") switchStyleSelectedRange("text-decoration", "line-through");
+  const userSelection = window.getSelection();
+  const selectedTextRange = userSelection.getRangeAt(0);
+
+  const span = document.createElement("span")
+  switch (action) {
+    case "bold":
+      span.style.fontWeight = `bold`
+      break;
+    case "italic":
+      break;
+    case "underline":
+      break;
+    case "strikeThrough":
+      break;
+  }
+  selectedTextRange.surroundContents(span)
 }
 
 /**

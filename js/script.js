@@ -118,16 +118,38 @@ function execDefaultAction(action) {
 function switchStyleSelectedRange(property, value) {
   /// 現在のテキスト選択を取得
   const userSelection = window.getSelection();
+
   /// 現在の選択範囲を取得
   const selectedTextRange = userSelection.getRangeAt(0);
+  const parentElm = selectedTextRange.startContainer.parentElement;
+
+  //設定したいstyle属性の値
+  const addStyle = `${property} : ${value};`;
 
   //styleの解除をするときfragmentだと不便だから、選択範囲のクローンを要素ノードに変換
   let fragment = selectedTextRange.cloneContents();
   const selectElm = document.createElement("span");
   selectElm.appendChild(fragment);
 
-  //設定したいstyle属性の値
-  const addStyle = `${property} : ${value};`;
+  //選択範囲の親要素の内側のstyleが既に設定されてれば解除
+  //現在、複数回呼ばれると選択範囲がずれて上手く機能しないから要修正
+  let childs = parentElm.querySelectorAll("span");
+  let exeStyles = [];
+  for (let i = 0; i < childs.length; i++) {
+    if (childs[i].getAttribute("style") == addStyle) exeStyles.push(childs[i]);
+  }
+
+  for (let i = 0; i < exeStyles.length; i++) {
+    exeStyles[i].outerHTML = exeStyles[i].innerHTML;
+  }
+  
+  console.log(exeStyles);
+
+  if (exeStyles.length > 0) return;
+
+
+  //選択範囲の親の親以上のstyleを解除
+  //実装予定
 
   //styleを設定したspan要素の中に選択範囲を追加
   const span = document.createElement("span");

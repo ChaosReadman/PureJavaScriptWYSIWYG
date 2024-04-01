@@ -7,6 +7,12 @@ const visuellView = contentArea.getElementsByClassName('visuell-view')[0];
 const htmlView = contentArea.getElementsByClassName('html-view')[0];
 const modal = document.getElementsByClassName('modal')[0];
 
+
+let aaaElm = document.getElementById("aaa");
+document.getElementsByClassName("editor-btn");
+document.querySelectorAll(".editor-btn");
+
+
 // 選択領域の変更時イベントを提議
 document.addEventListener('selectionchange', selectionChange);
 
@@ -121,35 +127,49 @@ function switchStyleSelectedRange(property, value) {
 
   /// 現在の選択範囲を取得
   const selectedTextRange = userSelection.getRangeAt(0);
-  const parentElm = selectedTextRange.startContainer.parentElement;
-
+  
   //設定したいstyle属性の値
   const addStyle = `${property} : ${value};`;
-
+  
   //styleの解除をするときfragmentだと不便だから、選択範囲のクローンを要素ノードに変換
   let fragment = selectedTextRange.cloneContents();
   const selectElm = document.createElement("span");
   selectElm.appendChild(fragment);
 
-  //選択範囲の親要素の内側のstyleが既に設定されてれば解除
+  
+  console.log(`開始位置: ${selectedTextRange.startOffset}`);
+  console.log(`終了位置: ${selectedTextRange.endOffset}`);
+  console.log(``);
+  
+  //何も選択されてなかったら何もしない
+  if(selectedTextRange.startOffset == selectedTextRange.endOffset) {
+    console.log("return");
+    return;
+  };
+  
+  //選択範囲の親の子孫のstyleが既に設定されてれば解除
   //現在、複数回呼ばれると選択範囲がずれて上手く機能しないから要修正
-  let childs = parentElm.querySelectorAll("span");
+  const parentElm = selectedTextRange.startContainer.parentElement;
+  console.log(parentElm.outerHTML);
   let exeStyles = [];
+  let childs = parentElm.querySelectorAll("span");
   for (let i = 0; i < childs.length; i++) {
     if (childs[i].getAttribute("style") == addStyle) exeStyles.push(childs[i]);
   }
-
+  
+  
   for (let i = 0; i < exeStyles.length; i++) {
     exeStyles[i].outerHTML = exeStyles[i].innerHTML;
   }
   
-  console.log(exeStyles);
+  
+  console.log(parentElm.outerHTML);
 
   if (exeStyles.length > 0) return;
 
 
   //選択範囲の親の親以上のstyleを解除
-  //実装予定
+  
 
   //styleを設定したspan要素の中に選択範囲を追加
   const span = document.createElement("span");
@@ -171,6 +191,7 @@ function switchStyleSelectedRange(property, value) {
   //うまくやればできるかもだから、一応コメントで残しておく
   // selectedTextRange.surroundContents(span)
 }
+
 
 function myExecCommand(action, b) {
   if (action == "bold") switchStyleSelectedRange("font-weight", action);

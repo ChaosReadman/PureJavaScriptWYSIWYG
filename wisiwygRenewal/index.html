@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="CodeHim">
+  <title>Simple WYSIWYG Editor Example</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <main>
+    <div class="simple-wysiwyg">
+      <div id="toolbar" class="toolbar">
+        <div class="line">
+
+          <div class="box">
+            <span id="boldBtn" class="editor-btn icon smaller" title="太字">
+              <img src="./img/bold.png" />
+            </span>
+            <span class="editor-btn icon smaller" title="斜体">
+              <img src="./img/italic.png" />
+            </span>
+            <span class="editor-btn icon smaller" title="下線">
+              <img src="./img/underline.png" />
+            </span>
+            <span class="editor-btn icon smaller" title="取消線">
+              <img src="./img/strikethrough.png" />
+            </span>
+          </div>
+
+          <div class="box">
+            <span class="editor-btn icon has-submenu">
+              <img src="./img/align-left.png" />
+              <div class="submenu">
+                <span class="editor-btn icon" title="左揃え">
+                  <img src="./img/align-left.png" />
+                </span>
+                <span class="editor-btn icon" title="中央揃え">
+                  <img src="./img/align-center.png" />
+                </span>
+                <span class="editor-btn icon" title="右揃え">
+                  <img src="./img/align-right.png" />
+                </span>
+                <span class="editor-btn icon" title="両端揃え">
+                  <img src="./img/align-justify.png" />
+                </span>
+              </div>
+            </span>
+            <span class="editor-btn icon" title="番号付きリスト">
+              <img src="./img/numbered-list.png" />
+            </span>
+            <span class="editor-btn icon" title="箇条書き">
+              <img src="./img/bulleted-list.png" />
+            </span>
+            <span class="editor-btn icon" title="インデントを減らす">
+              <img src="./img/outdent.png" />
+            </span>
+            <span class="editor-btn icon" title="インデントを増やす">
+              <img class="editor-btn icon" src="./img/indent.png" />
+            </span>
+
+          </div>
+          <div class="box">
+            <span class="editor-btn icon" title="水平線">
+              <img src="./img/horizontal-line.png" />
+            </span>
+          </div>
+
+        </div>
+        <div class="line">
+
+          <div class="box">
+            <span class="editor-btn icon smaller" title="アンドゥ">
+              <img src="./img/undo.png" />
+            </span>
+            <span class="editor-btn icon" title="文字修飾の解除">
+              <img src="./img/remove-format.png" />
+            </span>
+          </div>
+
+          <div class="box">
+            <span id="createLink" class="editor-btn icon smaller" title="リンクの挿入">
+              <img src="./img/add-link.png" />
+            </span>
+            <span class="editor-btn icon smaller" title="リンク取消">
+              <img src="./img/delete-link.png" />
+            </span>
+          </div>
+
+          <div class="box">
+            <span id="showHtmlBtn" class="editor-btn icon" title="HTMLコードの表示">
+              <img src="./img/source-code.png" />
+            </span>
+          </div>
+
+        </div>
+      </div>
+      <div class="content-area">
+        <div id="visualView" class="visuell-view" contenteditable></div>
+        <textarea id="htmlView" class="html-view" style="display: none;"></textarea>
+      </div>
+    </div>
+
+    <div class="modal">
+      <div class="modal-bg"></div>
+      <div class="modal-wrapper">
+        <div class="close">✖</div>
+        <div class="modal-content" id="modalCreateLink">
+          <h3>リンクの挿入</h3>
+          <input type="text" id="linkValue" placeholder="Link (例: https://xxxx.co.jp/)">
+          <div class="row">
+            <input type="checkbox" id="new-tab">
+            <label for="new-tab">新しいタブで表示</label>
+          </div>
+          <button class="done">完了</button>
+        </div>
+      </div>
+    </div>
+    <!-- END EDMO HTML (Happy Coding!)-->
+  </main>
+  <script src="./js/script.js"></script>
+</body>
+
+</html>

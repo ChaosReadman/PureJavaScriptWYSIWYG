@@ -26,7 +26,7 @@ for (let i = 0; i < toolbarBtns.length; i++) {
     if (btnId == "indentBtn") document.execCommand("indent"); //インデントを増やす
     if (btnId == "horizontalLineBtn") document.execCommand("insertHorizontalRule"); //水平線
     if (btnId == "undoBtn") document.execCommand("undo"); //戻る
-    if (btnId == "removeFormatBtn") document.execCommand("removeformat"); //文字修飾を削除
+    if (btnId == "removeFormatBtn") document.execCommand("removeformat"); //文字修飾を削除。execCommandの仕様でブロック要素は残って無駄なタグが生まれるから注意。 
     if (btnId == "addLinkBtn") execLinkAction(); //リンク追加
     if (btnId == "deleteLinkBtn") document.execCommand("unlink"); //リンク削除
     if (btnId == "insertImgBtn") document.execCommand("insertImage"); //画像挿入
@@ -45,8 +45,8 @@ for (let i = 0; i < toolbarBtns.length; i++) {
   });
 }
 
-document.addEventListener('selectionchange', selectionChange); // 選択領域の変更時イベントを提議
-contentArea.addEventListener('keypress', addParagraphTag); // キー押下時のイベントを提議
+// document.addEventListener('selectionchange', selectionChange); // 選択領域の変更時イベントを定義
+contentArea.addEventListener('keypress', addParagraphTag); // キー押下時のイベントを定義
 
 //リンク挿入ボタン押された時の処理
 function execLinkAction() {
@@ -106,58 +106,20 @@ function execLinkAction() {
 
 //現在の選択範囲を保存する
 function saveSelection() {
-  if (window.getSelection) { //メソッドがサポートされているか(Internet Explorer 8 以降)
-    selection = window.getSelection();
-    if (selection.getRangeAt && selection.rangeCount) { //getRangeAtとrangeCountがサポートされているか
-      let ranges = [];
-      for (var i = 0, len = selection.rangeCount; i < len; ++i) {
-        ranges.push(selection.getRangeAt(i));
-      }
-      return ranges;
-    }
-  } else if (document.selection && document.selection.createRange) {//メソッドが使えるか(Internet Explorer 8 以前)
-    return document.selection.createRange(); //選択範囲のrangeオブジェクトを返す
+  selection = window.getSelection();
+  let ranges = [];
+  for (var i = 0, len = selection.rangeCount; i < len; ++i) {
+    ranges.push(selection.getRangeAt(i));
   }
 
-  //何も使える関数がサポートされていなければnull返す
-  return null;
+  return ranges;
 }
 
 //保存した選択範囲をロードする
 function restoreSelection(savedSelection) {
-  if (savedSelection) { //null以外なら保存した選択範囲をロード
-    if (window.getSelection) { //メソッドがサポートされているか(Internet Explorer 8 以降)
-      sel = window.getSelection();
-      sel.removeAllRanges(); //選択範囲に関する全てのrange
-      for (var i = 0, len = savedSelection.length; i < len; ++i) {
-        sel.addRange(savedSelection[i]);
-      }
-    } else if (document.selection && savedSelection.select) { //メソッドが使えるか(Internet Explorer 8 以前)
-      savedSelection.select();
-    }
-  }
-}
-
-//現在の選択範囲をアクティブ・インアクティブに変更する
-function selectionChange(e) {
-
-  for (let i = 0; i < toolbarBtns.length; i++) {
-    let button = toolbarBtns[i];
-
-    // don't remove active class on code toggle button
-    if (button.dataset.action === 'toggle-view') continue;
-
-    button.classList.remove('active');
-  }
-
-  if (!childOf(window.getSelection().anchorNode.parentNode, editor)) return false;
-
-  parentTagActive(window.getSelection().anchorNode.parentNode);
-}
-
-//渡された子の親をチェックする
-function childOf(child, parent) {
-  return parent.contains(child);
+      selection = window.getSelection();
+      selection.removeAllRanges(); //選択範囲に関する全てのrangeを削除
+      for (let i = 0; i < savedSelection.length; ++i) selection.addRange(savedSelection[i]);
 }
 
 //現在の選択範囲にわたされたタグが設定可能かチェックする

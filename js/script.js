@@ -4,69 +4,55 @@ const toolbar = editor.getElementsByClassName('toolbar')[0];
 const buttons = toolbar.querySelectorAll('.editor-btn:not(.has-submenu)');
 const contentArea = editor.getElementsByClassName('content-area')[0];
 const visuellView = contentArea.getElementsByClassName('visuell-view')[0];
-const htmlView = contentArea.getElementsByClassName('html-view')[0];
 const modal = document.getElementsByClassName('modal')[0];
+const visuallView = document.getElementById("visualView");
+const htmlView = document.getElementById("htmlView");
 
-
-let aaaElm = document.getElementById("aaa");
-document.getElementsByClassName("editor-btn");
-document.querySelectorAll(".editor-btn");
-
-
-// 選択領域の変更時イベントを提議
-document.addEventListener('selectionchange', selectionChange);
-
-// ペースト時のイベントを定義
-visuellView.addEventListener('paste', pasteEvent);
-
-// キー押下時のイベントを提議
-contentArea.addEventListener('keypress', addParagraphTag);
-
-// ツールバーボタンクリックして時イベントを定義
-for (let i = 0; i < buttons.length; i++) {
-  let button = buttons[i];
-
-  button.addEventListener('click', function (e) {
-    let action = this.dataset.action;
-
-    switch (action) {
-      case 'toggle-view':
-        execCodeAction(this, editor);
-        break;
-      case 'createLink':
-        execLinkAction();
-        break;
-      default:
-        execDefaultAction(action);
+const toolbarBtns = document.querySelectorAll(".editor-btn");
+for (let i = 0; i < toolbarBtns.length; i++) {
+  const btnId = toolbarBtns[i].getAttribute("id");
+  toolbarBtns[i].addEventListener("click", (e) => {
+    if (btnId == "boldBtn") document.execCommand("bold"); //太字
+    if (btnId == "italicBtn") document.execCommand("italic"); //斜体
+    if (btnId == "underlineBtn") document.execCommand("underline"); //下線
+    if (btnId == "strikethroughBtn") document.execCommand("strikethrough"); //取消線
+    if (btnId == "alignCenterBtn") document.execCommand("justifyCenter"); //中央揃え
+    if (btnId == "alignLeftBtn") document.execCommand("justifyLeft"); //左揃え
+    if (btnId == "alineRightBtn") document.execCommand("justifyRight"); //右揃え
+    if (btnId == "alignJustifyBtn") document.execCommand("justifyFull"); //両端揃え
+    if (btnId == "numberedListBtn") document.execCommand("insertOrderedList"); //番号付きリスト
+    if (btnId == "bulletedListBtn") document.execCommand("insertUnorderedList"); //リスト
+    if (btnId == "outdentBtn") document.execCommand("outdent"); //インデントを減らす
+    if (btnId == "indentBtn") document.execCommand("indent"); //インデントを増やす
+    if (btnId == "horizontalLineBtn") document.execCommand("insertHorizontalRule"); //水平線
+    if (btnId == "undoBtn") document.execCommand("undo"); //戻る
+    if (btnId == "removeFormatBtn") document.execCommand("removeformat"); //文字修飾を削除
+    if (btnId == "addLinkBtn") execLinkAction(); //リンク追加
+    if (btnId == "deleteLinkBtn") document.execCommand("unlink"); //リンク削除
+    if (btnId == "insertImgBtn") document.execCommand("insertImage"); //画像挿入
+    if (btnId == "showHtmlBtn") { //HTMLコードの表示
+      if (htmlView.style.display == "none") {
+        htmlView.innerHTML = visuallView.innerHTML;
+        htmlView.style.display = "block";
+        visuallView.style.display = "none"
+      } else {
+        visuallView.innerHTML = htmlView.value;
+        htmlView.style.display = "none";
+        visuallView.style.display = "block"
+      }
     }
-
   });
 }
 
-/**
- * ヴィシュアルビューとHTMLビューのトグルを行なう
- */
-function execCodeAction(button, editor) {
+document.addEventListener('selectionchange', selectionChange); // 選択領域の変更時イベントを提議
+visuellView.addEventListener('paste', pasteEvent); // ペースト時のイベントを定義
+contentArea.addEventListener('keypress', addParagraphTag); // キー押下時のイベントを提議
 
-  if (button.classList.contains('active')) { // show visuell view
-    visuellView.innerHTML = htmlView.value;
-    htmlView.style.display = 'none';
-    visuellView.style.display = 'block';
-
-    button.classList.remove('active');
-  } else {  // show html view
-    htmlView.innerText = visuellView.innerHTML;
-    visuellView.style.display = 'none';
-    htmlView.style.display = 'block';
-
-    button.classList.add('active');
-  }
-}
-
-/**
- * 現在選択エリアにリンクを設定する
- */
+//リンク挿入ボタン押された時の処理
 function execLinkAction() {
+  //選択されてないならreturn
+  if (document.getSelection().isCollapsed) return;
+
   modal.style.display = 'block';
   let selection = saveSelection();
 
@@ -83,12 +69,10 @@ function execLinkAction() {
 
     restoreSelection(selection);
 
-    if (window.getSelection().toString()) {
-      let a = document.createElement('a');
-      a.href = linkValue;
-      if (newTab) a.target = '_blank';
-      window.getSelection().getRangeAt(0).surroundContents(a);
-    }
+    let a = document.createElement('a');
+    a.href = linkValue;
+    if (newTab) a.target = '_blank';
+    window.getSelection().getRangeAt(0).surroundContents(a);
 
     modal.style.display = 'none';
     linkInput.value = '';
@@ -112,97 +96,7 @@ function execLinkAction() {
   });
 }
 
-/**
- * この関数はノーマルイベントを処理する
- */
-function execDefaultAction(action) {
-  myExecCommand(action, false);
-  //  document.execCommand(action, false);
-}
-
-//選択範囲のstyle属性をスイッチのようにオンオフする
-function switchStyleSelectedRange(property, value) {
-  /// 現在のテキスト選択を取得
-  const userSelection = window.getSelection();
-
-  /// 現在の選択範囲を取得
-  const selectedTextRange = userSelection.getRangeAt(0);
-  
-  //設定したいstyle属性の値
-  const addStyle = `${property} : ${value};`;
-  
-  //styleの解除をするときfragmentだと不便だから、選択範囲のクローンを要素ノードに変換
-  let fragment = selectedTextRange.cloneContents();
-  const selectElm = document.createElement("span");
-  selectElm.appendChild(fragment);
-
-  
-  console.log(`開始位置: ${selectedTextRange.startOffset}`);
-  console.log(`終了位置: ${selectedTextRange.endOffset}`);
-  console.log(``);
-  
-  //何も選択されてなかったら何もしない
-  if(selectedTextRange.startOffset == selectedTextRange.endOffset) {
-    console.log("return");
-    return;
-  };
-  
-  //選択範囲の親の子孫のstyleが既に設定されてれば解除
-  //現在、複数回呼ばれると選択範囲がずれて上手く機能しないから要修正
-  const parentElm = selectedTextRange.startContainer.parentElement;
-  console.log(parentElm.outerHTML);
-  let exeStyles = [];
-  let childs = parentElm.querySelectorAll("span");
-  for (let i = 0; i < childs.length; i++) {
-    if (childs[i].getAttribute("style") == addStyle) exeStyles.push(childs[i]);
-  }
-  
-  
-  for (let i = 0; i < exeStyles.length; i++) {
-    exeStyles[i].outerHTML = exeStyles[i].innerHTML;
-  }
-  
-  
-  console.log(parentElm.outerHTML);
-
-  if (exeStyles.length > 0) return;
-
-
-  //選択範囲の親の親以上のstyleを解除
-  
-
-  //styleを設定したspan要素の中に選択範囲を追加
-  const span = document.createElement("span");
-  span.setAttribute("style", addStyle);
-  span.innerHTML = selectElm.innerHTML;
-
-
-  //なぜかpタグが勝手に挿入されるから要修正
-  //とりあえず選択範囲をspanで囲ってる。
-  //でもbloggerは子要素1つ1つをタグで囲ってstyle変更してるから、bloggerを参考に作成中
-  //多分こうしないとstyleの解除が難しい
-  //ってか子要素をまとめてタグで囲むとstyleの解除が難しかった
-  //やり方が下手なだけかもしれないから、良いやり方があったらコード書いてほしい
-  selectedTextRange.deleteContents(); //選択範囲をの要素を削除
-  selectedTextRange.insertNode(span); //選択範囲にstyleが適用された要素を追加
-
-  //surroundContentsだとstyleの解除が難しいことが分かったから使わない
-  //複数行選択してstyleを変更できないデメリットもある。もしかしたら他の要因でできないだけかも。
-  //うまくやればできるかもだから、一応コメントで残しておく
-  // selectedTextRange.surroundContents(span)
-}
-
-
-function myExecCommand(action, b) {
-  if (action == "bold") switchStyleSelectedRange("font-weight", action);
-  if (action == "italic") switchStyleSelectedRange("font-style", action);
-  if (action == "underline") switchStyleSelectedRange("text-decoration", action);
-  if (action == "strikeThrough") switchStyleSelectedRange("text-decoration", "line-through");
-}
-
-/**
- * 現在の選択範囲を保存する
- */
+//現在の選択範囲を保存する
 function saveSelection() {
   if (window.getSelection) {
     sel = window.getSelection();
@@ -219,9 +113,7 @@ function saveSelection() {
   return null;
 }
 
-/**
- *  保存した選択範囲をロードする
- */
+//保存した選択範囲をロードする
 function restoreSelection(savedSel) {
   if (savedSel) {
     if (window.getSelection) {
@@ -236,9 +128,7 @@ function restoreSelection(savedSel) {
   }
 }
 
-/**
- * 現在の選択範囲をアクティブ・インアクティブに変更する
- */
+//現在の選択範囲をアクティブ・インアクティブに変更する
 function selectionChange(e) {
 
   for (let i = 0; i < buttons.length; i++) {
@@ -255,16 +145,12 @@ function selectionChange(e) {
   parentTagActive(window.getSelection().anchorNode.parentNode);
 }
 
-/**
- * 渡された子の親をチェックする
- */
+//渡された子の親をチェックする
 function childOf(child, parent) {
   return parent.contains(child);
 }
 
-/**
- * 現在の選択範囲にわたされたタグが設定可能かチェックする
- */
+//現在の選択範囲にわたされたタグが設定可能かチェックする
 function parentTagActive(elem) {
   if (!elem || !elem.classList || elem.classList.contains('visuell-view')) return false;
 
@@ -287,9 +173,7 @@ function parentTagActive(elem) {
   return parentTagActive(elem.parentNode);
 }
 
-/**
- * ペーストされたものをチェックしてHTMLを除去する
- */
+//ペーストされたものをチェックしてHTMLを除去する
 function pasteEvent(e) {
   e.preventDefault();
 
@@ -297,9 +181,7 @@ function pasteEvent(e) {
   document.execCommand('insertHTML', false, text);
 }
 
-/**
- * エンターキー押下時にパラグラフタグを追加する
- */
+//エンターキー押下時にパラグラフタグを追加する
 function addParagraphTag(evt) {
   if (evt.keyCode == '13') {
 

@@ -18,7 +18,7 @@ for (let i = 0; i < toolbarBtns.length; i++) {
     if (btnId == "strikethroughBtn") document.execCommand("strikethrough"); //取消線
     if (btnId == "alignCenterBtn") document.execCommand("justifyCenter"); //中央揃え
     if (btnId == "alignLeftBtn") document.execCommand("justifyLeft"); //左揃え
-    if (btnId == "alineRightBtn") document.execCommand("justifyRight"); //右揃え
+    if (btnId == "alignRightBtn") document.execCommand("justifyRight"); //右揃え
     if (btnId == "alignJustifyBtn") document.execCommand("justifyFull"); //両端揃え
     if (btnId == "numberedListBtn") document.execCommand("insertOrderedList"); //番号付きリスト
     if (btnId == "bulletedListBtn") document.execCommand("insertUnorderedList"); //リスト
@@ -54,6 +54,7 @@ function execLinkAction() {
   if (document.getSelection().isCollapsed) return;
 
   modal.style.display = 'block';
+  //選択範囲を保存。なぜならユーザーがリンクを入力する際、visualViewの範囲選択が解除されるから。
   let selection = saveSelection();
 
   let submit = modal.querySelectorAll('button.done')[0];
@@ -105,32 +106,34 @@ function execLinkAction() {
 
 //現在の選択範囲を保存する
 function saveSelection() {
-  if (window.getSelection) {
-    sel = window.getSelection();
-    if (sel.getRangeAt && sel.rangeCount) {
+  if (window.getSelection) { //メソッドがサポートされているか(Internet Explorer 8 以降)
+    selection = window.getSelection();
+    if (selection.getRangeAt && selection.rangeCount) { //getRangeAtとrangeCountがサポートされているか
       let ranges = [];
-      for (var i = 0, len = sel.rangeCount; i < len; ++i) {
-        ranges.push(sel.getRangeAt(i));
+      for (var i = 0, len = selection.rangeCount; i < len; ++i) {
+        ranges.push(selection.getRangeAt(i));
       }
       return ranges;
     }
-  } else if (document.selection && document.selection.createRange) {
-    return document.selection.createRange();
+  } else if (document.selection && document.selection.createRange) {//メソッドが使えるか(Internet Explorer 8 以前)
+    return document.selection.createRange(); //選択範囲のrangeオブジェクトを返す
   }
+
+  //何も使える関数がサポートされていなければnull返す
   return null;
 }
 
 //保存した選択範囲をロードする
-function restoreSelection(savedSel) {
-  if (savedSel) {
-    if (window.getSelection) {
+function restoreSelection(savedSelection) {
+  if (savedSelection) { //null以外なら保存した選択範囲をロード
+    if (window.getSelection) { //メソッドがサポートされているか(Internet Explorer 8 以降)
       sel = window.getSelection();
-      sel.removeAllRanges();
-      for (var i = 0, len = savedSel.length; i < len; ++i) {
-        sel.addRange(savedSel[i]);
+      sel.removeAllRanges(); //選択範囲に関する全てのrange
+      for (var i = 0, len = savedSelection.length; i < len; ++i) {
+        sel.addRange(savedSelection[i]);
       }
-    } else if (document.selection && savedSel.select) {
-      savedSel.select();
+    } else if (document.selection && savedSelection.select) { //メソッドが使えるか(Internet Explorer 8 以前)
+      savedSelection.select();
     }
   }
 }

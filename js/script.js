@@ -8,9 +8,11 @@ const modal = document.getElementsByClassName('modal')[0];
 const visuallView = document.getElementById("visualView");
 const htmlView = document.getElementById("htmlView");
 
+
+//ツールバーの押されたボタンに応じた処理を実行
 const toolbarBtns = document.querySelectorAll(".editor-btn");
 for (let i = 0; i < toolbarBtns.length; i++) {
-  const btnId = toolbarBtns[i].getAttribute("id");
+  const btnId = toolbarBtns[i].getAttribute("id"); //判定用にボタン要素のidを取得する
   toolbarBtns[i].addEventListener("click", (e) => {
     if (btnId == "boldBtn") document.execCommand("bold"); //太字
     if (btnId == "italicBtn") document.execCommand("italic"); //斜体
@@ -31,6 +33,7 @@ for (let i = 0; i < toolbarBtns.length; i++) {
     if (btnId == "deleteLinkBtn") document.execCommand("unlink"); //リンク削除
     if (btnId == "insertImgBtn") document.execCommand("insertImage"); //画像挿入
     if (btnId == "showHtmlBtn") { //HTMLコードの表示
+      //htmlViewとvisualViewの表示・非表示を切り替える
       if (htmlView.style.display == "none") {
         htmlView.innerHTML = visuallView.innerHTML;
         htmlView.style.display = "block";
@@ -50,7 +53,7 @@ contentArea.addEventListener('keypress', addParagraphTag); // キー押下時の
 
 //リンク挿入ボタン押された時の処理
 function execLinkAction() {
-  //選択されてないならreturn
+  //範囲選択されてないならreturn
   if (document.getSelection().isCollapsed) return;
 
   modal.style.display = 'block';

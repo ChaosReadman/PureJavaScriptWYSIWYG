@@ -1,16 +1,14 @@
 // 変数定義（最初に実行される）
 const editor = document.getElementsByClassName('simple-wysiwyg')[0];
-const toolbar = editor.getElementsByClassName('toolbar')[0];
-const buttons = toolbar.querySelectorAll('.editor-btn:not(.has-submenu)');
-const contentArea = editor.getElementsByClassName('content-area')[0];
-const visuellView = contentArea.getElementsByClassName('visuell-view')[0];
-const modal = document.getElementsByClassName('modal')[0];
+const toolbar = document.getElementById('toolbar');
+const contentArea = document.getElementById('content-area');
+const modal = document.getElementById('modal');
 const visuallView = document.getElementById("visualView");
 const htmlView = document.getElementById("htmlView");
+const toolbarBtns = document.querySelectorAll(".editor-btn");
 
 
 //ツールバーの押されたボタンに応じた処理を実行
-const toolbarBtns = document.querySelectorAll(".editor-btn");
 for (let i = 0; i < toolbarBtns.length; i++) {
   const btnId = toolbarBtns[i].getAttribute("id"); //判定用にボタン要素のidを取得する
   toolbarBtns[i].addEventListener("click", (e) => {
@@ -48,7 +46,6 @@ for (let i = 0; i < toolbarBtns.length; i++) {
 }
 
 document.addEventListener('selectionchange', selectionChange); // 選択領域の変更時イベントを提議
-visuellView.addEventListener('paste', pasteEvent); // ペースト時のイベントを定義
 contentArea.addEventListener('keypress', addParagraphTag); // キー押下時のイベントを提議
 
 //リンク挿入ボタン押された時の処理
@@ -60,27 +57,34 @@ function execLinkAction() {
   let selection = saveSelection();
 
   let submit = modal.querySelectorAll('button.done')[0];
-  let close = modal.querySelectorAll('.close')[0];
+  let close = document.getElementById('close');
 
   // done button active => add link
   submit.addEventListener('click', function (e) {
     e.preventDefault();
+    //要素取得
     let newTabCheckbox = modal.querySelectorAll('#new-tab')[0];
     let linkInput = modal.querySelectorAll('#linkValue')[0];
+
+    //ユーザーの入力を変数に保存
     let linkValue = linkInput.value;
     let newTab = newTabCheckbox.checked;
 
+    //選択範囲を復元
     restoreSelection(selection);
 
+    //選択範囲を<a href="" target="_blank"></a>で囲む
     let a = document.createElement('a');
     a.href = linkValue;
     if (newTab) a.target = '_blank';
     window.getSelection().getRangeAt(0).surroundContents(a);
 
+    //モーダルを非表示にする
     modal.style.display = 'none';
+    //テキストボックス内容を空白にする
     linkInput.value = '';
 
-    // deregister modal events
+    // ボタンのイベントリスナーを解除
     submit.removeEventListener('click', arguments.callee);
     close.removeEventListener('click', arguments.callee);
   });
@@ -134,8 +138,8 @@ function restoreSelection(savedSel) {
 //現在の選択範囲をアクティブ・インアクティブに変更する
 function selectionChange(e) {
 
-  for (let i = 0; i < buttons.length; i++) {
-    let button = buttons[i];
+  for (let i = 0; i < toolbarBtns.length; i++) {
+    let button = toolbarBtns[i];
 
     // don't remove active class on code toggle button
     if (button.dataset.action === 'toggle-view') continue;

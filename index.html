@@ -6,16 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="CodeHim">
   <title>Simple WYSIWYG Editor</title>
-
-  <!-- Style CSS -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
   <main>
-    <!-- Start DEMO HTML (Use the following code into your project)-->
-    <div class="simple-wysiwyg">
-      <div id="toolbar" class="toolbar">
+    <div id="simpleWysiwyg" class="simple-wysiwyg">
+      <div id="toolbar">
         <div class="line">
 
           <div class="box">
@@ -100,17 +97,17 @@
 
         </div>
       </div>
-      <div class="content-area">
+      <div id="content-area">
         <div id="visualView" class="visuell-view" contenteditable></div>
         <textarea id="htmlView" class="html-view" style="display: none;"></textarea>
       </div>
     </div>
 
-    <div class="modal">
-      <div class="modal-bg"></div>
-      <div class="modal-wrapper">
-        <div class="close">✖</div>
-        <div class="modal-content" id="modalCreateLink">
+    <div id="modal">
+      <div id="modal-bg"></div>
+      <div id="modal-wrapper">
+        <div id="close">✖</div>
+        <div id="modal-content" id="modalCreateLink">
           <h3>リンクの挿入</h3>
           <input type="text" id="linkValue" placeholder="Link (例: https://xxxx.co.jp/)">
           <div class="row">
